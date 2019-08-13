@@ -62,4 +62,3 @@ Make sure the images you add are added to the ui and that you can select them to
 
 #### Challenge
 Chose another app which we have built or one you build on your own and implement a `RecyclerView` in it.
-
