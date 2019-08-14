@@ -3,15 +3,19 @@ package com.lambdaschool.favoritepicturesgallery.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.lambdaschool.favoritepicturesgallery.R
+import com.lambdaschool.favoritepicturesgallery.adapter.ImageListAdapter
 import com.lambdaschool.favoritepicturesgallery.model.ImageData
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     internal var imageList: ArrayList<ImageData> = ArrayList()
+    private var layoutManager: LinearLayoutManager? = null
+    private var listAdapter: ImageListAdapter? = null
     companion object {
         internal const val REQUEST_IMAGE_GET = 1
+        internal const val EDIT_IMAGE_REQUEST = 2
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,8 +23,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val context = this
-        imageList = ArrayList()
 
+        imageList = ArrayList()
 
         button_add.setOnClickListener {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
@@ -29,28 +33,33 @@ class MainActivity : AppCompatActivity() {
                 startActivityForResult(intent, REQUEST_IMAGE_GET)
             }
         }
+
+        layout_list.setHasFixedSize(true)
+        layoutManager = LinearLayoutManager(this)
+        layout_list.layoutManager = layoutManager
+        listAdapter = ImageListAdapter(imageList, this)
+        layout_list.adapter = listAdapter
     }
 
-    fun createTextView(imageDetails: String, index: Int): TextView {
-        val view = TextView(this)
-        view.text = imageDetails
-        view.textSize = 20f
-        view.tag = index
-        view.setOnClickListener {
-            val intent = Intent(this, DetailsActivity::class.java)
-            intent.putExtra("object", imageDetails)
-        }
-        return view
-    }
+    //private fun refreshListView() {
+    //    listAdapter!!.notifyDataSetChanged()
+    //}
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_IMAGE_GET && resultCode == RESULT_OK) {
             val fullPhotoUri = data!!.data
             if (fullPhotoUri != null) {
                 imageList.add(ImageData(fullPhotoUri))
-                var index = imageList.size-1
-                layout_list.addView(createTextView("${imageList[imageList.size-1].fileUri}-${imageList[imageList.size - 1].name}", index))
+                listAdapter!!.notifyItemInserted(imageList.size - 1)
+            }
+        } else if (requestCode == EDIT_IMAGE_REQUEST && resultCode == RESULT_OK) {
+            val returnedData = data!!.getSerializableExtra("object") as ImageData
+            for (i in imageList.indices) {
+                if (imageList[i].fileUriString == returnedData.fileUriString) {
+                    imageList[i] = returnedData
+                }
             }
         }
+        //refreshListView()
     }
 }

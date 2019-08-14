@@ -8,24 +8,18 @@
         android:layout_height="match_parent"
         tools:context=".ui.MainActivity">
 
-    <ScrollView
-            android:id="@+id/scroll_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        <LinearLayout
-                android:id="@+id/layout_list"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-        </LinearLayout>
-    </ScrollView>
-
     <Button
             android:id="@+id/button_add"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Select Image"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/layout_list"
+            tools:listitem="@layout/image_item_layout"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+    </androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>
